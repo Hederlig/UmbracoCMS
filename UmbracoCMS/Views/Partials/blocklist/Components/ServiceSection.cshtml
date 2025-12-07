@@ -1,11 +1,19 @@
 ﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem>;
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
-    @{
+@{
     var content = (ContentModels.ServiceSection)Model.Content;
     var settings = Model.Settings as ContentModels.ServiceSettings; 
 
     var sectionColor = settings?.ServiceBgColor?.Color ?? "#ffffff";
-    }
+
+
+
+    var current = Umbraco.AssignedContentItem;
+    var siteRoot = current?.Root();
+
+    var servicePage = siteRoot?.Children<PageService>()?.FirstOrDefault();
+    var items = servicePage?.Children<ServiceDetail>()?.OrderByDescending(x => x.CreateDate).ToList() ?? [];
+}
 
 
 <section class="py-[4rem] bg-[@sectionColor]">
@@ -23,20 +31,29 @@
 
     <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-      <div class="bg-[var(--card-bg, #ffffff border-2 border-[var(--border-color)] w-full min-h-[350px] overflow-hidden rounded">
-        <a href="#" class="block no-underline">
-          <h4 class="p-[1.5rem] font-semibold text-[--background-color)]">Risk Management</h4>
 
-          <img src="/images/Risk.svg" alt="Risk" class="block h-[220px] object-cover" />
+        @if (items.Any())
 
-          <div class="p-[1.5rem]">
-            <p class="text-sm">
-              Dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-              Excepteur sint occaecat cupidatat non.
-            </p>
-          </div>
-        </a>
-      </div>
+                {
+                @foreach (var item in items)
+                    {
+                    <div class="bg-[var(black), #ffffff border-2 border-[var(--border-color)] w-full min-h-[350px] overflow-hidden rounded">
+                        <a href="@item.Url()" class="block no-underline">
+                            <h4 class="p-[1.5rem] font-semibold text-[--background-color)]">@item.Name</h4>
+                            <img src="@item.ServiceDetailThumbnail?.Url() " class="block h-[220px] object-cover" />
+
+                            <div class="p-[1.5rem]">
+                                <p class="text-sm"> @item.ServiceDetailExcerpt </p>
+                            </div>
+                        </a>
+                    </div>
+                    }
+                }
+            else
+                {
+                    <p>No services available at the moment.</p>
+
+                }
     
     </div>
 
