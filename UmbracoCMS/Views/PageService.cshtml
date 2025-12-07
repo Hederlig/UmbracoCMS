@@ -1,0 +1,7 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<PageService>
+@{
+	Layout = "mailLayout.cshtml";
+}
+
+@Html.GetBlockListHtml(Model.Sections)
